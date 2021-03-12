@@ -680,7 +680,7 @@ shinyServer(function(input, output, session) {
   #### load pathway from saved RData ####
   observeEvent(input$kegg_data, {
     
-    print(input$kegg_data$datapath)
+    # print(input$kegg_data$datapath)
     
     # unzip(input$kegg_data$datapath)
     
