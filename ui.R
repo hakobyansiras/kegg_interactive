@@ -2,14 +2,13 @@ library(shiny)
 library(shinyWidgets)
 library(shinyjs)
 library(visNetwork)
+library("shinycssloaders")
 
 load("subtypes.RData")
 
 shinyUI(
   
   fluidPage(
-    
-    titlePanel("KEGG interactive", windowTitle = "KEGG editor"),
     
     tags$script('
       $(document).mousedown(function(ev){
@@ -176,41 +175,44 @@ shinyUI(
     
     column(2, 
            fixedPanel(
+             titlePanel(span("KEGG interactive", style = "color:#1f992f"), windowTitle = "KEGG interactive"),
              wellPanel(
              br(),
              style="background-color: #f2f2f2; height: 600px; width: 250px;",
              
              div(style="display: inline-block;vertical-align:top;",
                  dropdown(label = "Load from KEGG",
-                          div(style="display: inline-block;vertical-align:top;", selectizeInput("selected_pathway", label = NULL, choices = "Chemokine_signaling_pathway", selected = "Chemokine_signaling_pathway")),
+                          div(style="display: inline-block;vertical-align:top; width: 210px;", selectizeInput("selected_pathway", label = NULL, choices = "Chemokine_signaling_pathway", selected = "Chemokine_signaling_pathway")),
                           actionButton("load_pathway", label = "Load")
                  )
              ),
-             div(style="display: inline-block;vertical-align:top;",
+             div(style="display: inline-block;vertical-align:top; width: 210px;",
                  dropdown(label = "Load from file",
                           div(style="display: inline-block;vertical-align:top;", fileInput("kegg_data", label = h3("Load RData file")))
                  )
              ),
              
-             selectizeInput("app_mode", label = "App mode", choices = c("Curation", "Vis"), selected = "Curation"),
+             div(style="display: inline-block;vertical-align:top; width: 210px;", 
+                 selectizeInput("app_mode", label = "App mode", choices = c("Curation", "Vis"), selected = "Curation")
+                 ),
              
              conditionalPanel(
                condition = "input.app_mode == 'Curation'",
-               div(style="display: inline-block;vertical-align:top;",
+               div(style="display: inline-block;vertical-align:top; width: 210px;",
                    dropdown(label = "Network editing",
                             # div(style="display: inline-block;vertical-align:top;", actionButton("save", "Save work")),
                             div(style="display: inline-block;vertical-align:top;", actionButton("draw_edge", "Draw_edge")),
                             div(style="display: inline-block;vertical-align:top;", actionButton("check_disconnected_nodes", "Highlight disconnected node(s)"))
                             )
                ),
-               div(style="display: inline-block;vertical-align:top;width: 107px;",
+               div(style="display: inline-block;vertical-align:top; width: 210px;",
                    dropdown(label = "Download",
                             div(downloadButton("download_table", label = "Download pathway", style='display: block; margin: auto;')),
                             div(downloadButton("download_pathway", label = "Save work", style='display: block; margin: auto;'))
                    )
                ),
                # div(style="display: inline-block;vertical-align:top;width: 80px;", checkboxInput("psf_mode", label = "PSF test", value = FALSE)),
-               div(style="display: inline-block;vertical-align:top;width: 160px;",
+               div(style="display: inline-block;vertical-align:top; width: 210px;",
                    dropdown(label = "Presenting modes",
                             div(style="display: inline-block;vertical-align:top;width: 130px;", checkboxInput("show_changes", label = "Show changes", value = FALSE))
                    )
@@ -220,7 +222,7 @@ shinyUI(
              ),
              conditionalPanel(
                condition = "input.app_mode == 'Vis'",
-               div(style="display: inline-block;vertical-align:top;",
+               div(style="display: inline-block;vertical-align:top; width: 230px;",
                    dropdown(label = "Upload exp",
                             div(style="display: inline-block;vertical-align:top;", fileInput("file", label = h3("Expression matrix input")))
                    )
@@ -228,19 +230,21 @@ shinyUI(
                useShinyjs(),
                hidden(
                  div(id = "vis_buttons",
-                     div(style="display: inline-block;vertical-align:top;",
+                     div(style="display: inline-block;vertical-align:top; width: 210px;",
                          actionButton("map_fc_values", label = "Map FC values")
                      ),
-                     div(style="display: inline-block;vertical-align:top;",
+                     div(style="display: inline-block;vertical-align:top; width: 210px;",
                          actionButton("psf_run", label = "Calculate psf")
                      ),
-                     div(style="display: inline-block;vertical-align:top;",
-                         selectizeInput("node_influence", label = "Node partial influence", choices = "", selected = NULL)
-                     ),
-                     div(style="display: inline-block;vertical-align:top;",
+                     # div(style="display: inline-block;vertical-align:top; width: 210px;",
+                     #     selectizeInput("node_influence", label = "Node partial influence", choices = "", selected = NULL)
+                     # ),
+                     div(style="display: inline-block;vertical-align:top; width: 210px;",
                          actionButton("reset_changed_values", label = "Reset modifications")
                      ),
-                     downloadButton("download_signal_table", label = "Download signal table", style='display: block; margin: auto;')
+                     # div(style="display: inline-block;vertical-align:top; width: 210px;",
+                     #     downloadButton("download_signal_table", label = "Download signal table", style='display: block; margin: auto;')
+                     # )
                  )
                ),
                
@@ -339,15 +343,15 @@ shinyUI(
              ),
              useShinyjs(),
              hidden(
-               div(id = "exp_change_panel",
+               div(id = "exp_change_panel", 
                    absolutePanel(
                      # top = 20, right = 20,
                      width = 250,
                      draggable = TRUE,
-                     fixed = F,
+                     fixed = T,
                      cursor = "auto",
                      wellPanel(
-                       style = "background-color: rgb(217, 217, 217, 0.8); z-index:2000;",
+                       style = "background-color: rgb(217, 217, 217, 0.8); z-index:1;",
                        numericInput("exp_slider", label = "Exp value", value = 1, step = 0.001),
                        selectizeInput("node_function_selector", label = "Node function", choices = c("mean", "max", "min", "gm_mean", "product"), selected = "mean"),
                        actionButton("change_exp_submit", label = "Change attrs and calc PSF"),
@@ -371,7 +375,6 @@ shinyUI(
                      draggable = TRUE,
                      fixed = TRUE,
                      cursor = "auto",
-                     class = "panel panel-default",
                      wellPanel(
                        style = "background-color: rgb(217, 217, 217, 0.8); z-index:2000;",
 	                     actionButton("close_edge_attr_vis_panel", "X", style='position: absolute; right: 8px; top: 8px; text-align: center; width: 18px; height 15px; border-style: solid; border-radius: 10px; background-color: rgb(255, 0, 0, 0.9); font-size: 80%; padding: 0px; align :'),
@@ -385,13 +388,27 @@ shinyUI(
              
              tabsetPanel(
                tabPanel(title='KEGG',useShinyjs(),
+                        tags$head(tags$style(HTML("
+    .progress-striped .bar {
+      background-color: #149bdf;
+      background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.6)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.6)), color-stop(0.75, rgba(255, 255, 255, 0.6)), color-stop(0.75, transparent), to(transparent));
+      background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.6) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.6) 75%, transparent 75%, transparent);
+      background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.6) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.6) 75%, transparent 75%, transparent);
+      background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.6) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.6) 75%, transparent 75%, transparent);
+      background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.6) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.6) 75%, transparent 75%, transparent);
+      -webkit-background-size: 40px 40px;
+         -moz-background-size: 40px 40px;
+           -o-background-size: 40px 40px;
+              background-size: 40px 40px;
+    }
+  "))),
                         div(id = "image",
                             # style="height:580px; overflow-y: scroll; overflow-x: scroll;",
                             htmlOutput('pathway_load_error')),
                         imageOutput("pathway_image",
                                     dblclick = "image_click",
                                     brush = brushOpts(id = "image_brush", delayType = "debounce",resetOnNew = TRUE),
-                                    hover = hoverOpts(id = "image_hover", delay = 0)
+                                    hover = hoverOpts(id = "image_hover", delay = 0) 
                         )
                         
                ),

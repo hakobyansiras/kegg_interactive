@@ -655,6 +655,8 @@ shinyServer(function(input, output, session) {
   observeEvent(input$load_pathway, {
     if(input$selected_pathway != "") {
       v$pathway_name <- input$selected_pathway
+      
+      v$image_file <- NULL
         
       v$pathway_data <- kegg_data_downloader(input$selected_pathway)
         
